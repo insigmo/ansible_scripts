@@ -35,9 +35,9 @@ The `include/` directory for vars which may be use in playbooks:
     └── vars.yml
 ```
 
-The `logs/` directory for logs which fetched from hosts:
+The `logs/` directory for logs which fetched from hosts
 
-The `playbooks/` directory for playbook instructions which will be run on each server :
+The `playbooks/` directory for playbook instructions which will be run on each server:
 
 ```
     playbooks/
@@ -52,6 +52,10 @@ The `playbooks/` directory for playbook instructions which will be run on each s
     ├── service.yml
     └── uri.yml
 ```
+
+The `config.yml` for temporary variables which use on playbooks 
+
+The `development` is inventory hosts where added ip-hosts and user access data
 
 
 Install or Update MC
@@ -115,5 +119,5 @@ Logs will be downloaded into `./logs` directory, separate file for each node:
 Other
 -----
 
-Check out other available playbooks in `./playbooks` directory to what else is available.
+Check out other available playbooks in `playbooks/` directory to what else is available.
 
