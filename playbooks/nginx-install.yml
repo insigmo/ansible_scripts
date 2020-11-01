@@ -1,0 +1,39 @@
+---
+
+- hosts: servers
+  vars_files:
+    - ../config.yml
+
+  tasks:
+    - name: install nginx
+      apt:
+        name: nginx-full
+        state: latest
+      become: true
+      notify: "restart nginx"
+
+    - name: remove default nginx site
+      file:
+          path: /etc/nginx/sites-enabled/default
+          state: absent
+      become: true
+      notify: "restart nginx"
+
+    - name: apply nginx configuration
+      template:
+        src: ../files/nginx.conf.j2
+        dest: /etc/nginx/sites-enabled/nginx.conf
+        owner: root
+        group: root
+        mode: 0644
+      become: true
+      notify: "restart nginx"
+
+  handlers:
+    - name: restart nginx
+      service:
+        name: nginx.service
+        state: restarted
+      become: true
+
+# vim:expandtab:ts=2:sw=2:syntax=yaml:tw=0

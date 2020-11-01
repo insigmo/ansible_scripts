@@ -1,0 +1,25 @@
+---
+
+- hosts: servers
+
+  tasks:
+    - name: get request
+      uri:
+        method: GET
+        url: "https://httpbin.org/get"
+        status_code: 200
+
+    - name: post request
+      uri:
+        method: POST
+        url: 'https://httpbin.org/post'
+        body: "key=value&key1=value1"
+        status_code: 200
+
+    - name: delete request
+      uri:
+        method: DELETE
+        url: 'https://httpbin.org/delete'
+        status_code: 200
+
+# vim:expandtab:ts=2:sw=2:syntax=yaml:tw=0

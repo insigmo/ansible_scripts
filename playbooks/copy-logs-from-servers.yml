@@ -1,0 +1,25 @@
+---
+
+- hosts: servers
+  vars_files:
+    - ../include/vars.yml
+
+
+  tasks:
+    - name: collect logs
+      command: env GZIP=-9
+               tar caf '/tmp/logs.tar.gz' --exclude='Logs/*dmp*' --warning=no-file-changed
+                -C /file/path/ Logs
+      become: true
+      args:
+        warn: false
+      register: collect_logs
+      failed_when: collect_logs.rc > 1
+
+    - name: copy logs archive
+      fetch:
+        src: '/file/path/logs.tar.gz'
+        dest: '../logs/{{ansible_date_time.iso8601_basic_short}}_{{ansible_hostname}}_logs.tar.gz'
+        flat: yes
+
+# vim:expandtab:ts=2:sw=2:syntax=yaml:tw=0

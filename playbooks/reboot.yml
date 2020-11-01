@@ -1,0 +1,22 @@
+---
+
+- hosts: servers
+  vars_files:
+    - ../config.yml
+    - ../include/vars.yml
+
+  tasks:
+    - name: Wait for server to restart
+      reboot:
+        reboot_timeout: 3600
+
+    - name: wait for the host to finish rebooting
+      local_action:
+        module: wait_for
+          host={{ inventory_hostname }}
+          port=22
+          delay=20
+          connect_timeout=200
+      #delegate_to: localhost
+
+# vim:expandtab:ts=2:sw=2:syntax=yaml:tw=0

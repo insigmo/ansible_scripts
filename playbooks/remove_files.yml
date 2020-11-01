@@ -1,0 +1,26 @@
+---
+
+- hosts: servers
+  vars_files:
+    - ../config.yml
+    - ../include/vars.yml
+
+  tasks:
+    - name: clean files with criteria
+      become: yes
+      become_user: root
+      become_method: su
+
+      shell: 'find /file/path/ -type f -name "*txt*" -print0 | xargs -0 rm'
+      ignore_errors: yes
+
+
+    - name: clean all files
+      become: yes
+      become_user: root
+      become_method: su
+
+      shell: "find /file/path/* -print0 | xargs -0 rm"
+      ignore_errors: yes
+
+# vim:expandtab:ts=2:sw=2:syntax=yaml:tw=0

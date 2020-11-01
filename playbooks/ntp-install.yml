@@ -1,0 +1,34 @@
+---
+
+- hosts: servers
+  vars_files:
+    - ../config.yml
+    - ../include/vars.yml
+
+  tasks:
+    - name: install ntp server
+      apt:
+        name: ntp
+        state: present
+      become: true
+
+    - name: configure ntp server
+      template:
+        src: ../files/ntp.conf.j2
+        dest: /etc/ntp.conf
+        owner: root
+        group: root
+        mode: 0644
+      become: true
+      notify: "restart ntp"
+
+
+  handlers:
+    - name: restart ntp
+      service:
+        name: ntp
+        state: restarted
+      become: true
+
+
+# vim:expandtab:ts=2:sw=2:syntax=yaml:tw=0

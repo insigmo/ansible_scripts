@@ -1,0 +1,17 @@
+---
+
+- hosts: servers
+
+  tasks:
+    - name: create text file
+      command: echo 'mc version = 3.7.18-1' > /tmp/mc_version.conf
+      become: true
+
+    - name: replace mc version in /tmp/mc_version.conf
+      replace:
+        path: /tmp/mc_version.conf
+        regexp: '(\d\.)+\d{2}-\d'
+        replace: '{{ mc_version }}'
+      become: true
+
+# vim:expandtab:ts=2:sw=2:syntax=yaml:tw=0

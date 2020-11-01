@@ -1,0 +1,28 @@
+proxy_cache_path proxy_cache keys_zone=api:100m inactive=12h;
+proxy_cache_key "$proxy_host$uri$is_args$args";
+proxy_cache_lock on;
+
+# see http://nginx.org/ru/docs/http/ngx_http_proxy_module.html#proxy_cache_path
+proxy_ignore_headers Cache-Control Set-Cookie X-Accel-Expires Expires;
+
+server {
+    listen       8088;
+    server_name  localhost;
+
+    location / {
+        proxy_pass http://{{ server_upstream }};
+    }
+
+    location /query {
+        proxy_pass http://{{ server_upstream }};
+        proxy_cache api;
+        proxy_cache_valid 200 12h;
+
+        set $myvar_cache_control_nocache 0;
+        if ($http_cache_control ~* "([,\s]|^)no-cache([,\s]|$)") {
+            set $myvar_cache_control_nocache 1;
+        }
+        proxy_cache_bypass $myvar_cache_control_nocache;
+    }
+}
+

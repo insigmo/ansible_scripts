@@ -1,0 +1,102 @@
+---
+
+- hosts: servers
+  vars_files:
+    - ../config.yml
+    - ../include/vars.yml
+
+  tasks:
+    - name: lsblk
+      command: lsblk
+      register: lsblk
+
+    - name: find disk device
+      shell: echo "{{ lsblk.stdout }}" | awk '"2T" == $4 && "disk" == $6 {print "/dev/" $1}'
+      register: find_disk
+
+    - name: check disk was found
+      fail:
+        msg: 'Disk was not found'
+      when: find_disk.stdout == ""
+
+    - name: umount physical device
+      command: umount '{{ find_disk.stdout }}'
+      ignore_errors: true
+      become: true
+
+    - name: umount logical device
+      command: umount '{{ storage_dev }}'
+      ignore_errors: true
+      become: true
+
+    - name: umount mount moint
+      mount:
+        src: '{{ storage_dev }}'
+        path: '{{ storage_path }}'
+        state: unmounted
+      become: true
+
+    - name: cleanup /etc/fstab
+      mount:
+        path: '{{ storage_path }}'
+        src: '{{ storage_dev }}'
+        state: absent
+      become: true
+
+    - name: cleanup mount point
+      file:
+        path: '{{ storage_path }}/'
+        state: absent
+      become: true
+
+    - name: install lvm
+      apt:
+        name: lvm2
+        state: present
+      become: true
+
+    - name: create volume group
+      lvg:
+        vg: '{{ storage_volume_group }}'
+        pvs: '{{ find_disk.stdout }}'
+        state: present
+      become: true
+
+    - name: create logical volume
+      lvol:
+        lv: '{{ storage_logical_volume }}'
+        vg: '{{ storage_volume_group }}'
+        size: 100%VG
+        state: present
+      become: true
+
+    - name: create storage mount point directory
+      file:
+        path: '{{ storage_path }}'
+        state: directory
+        mode: 0755
+      become: true
+
+    - name: format
+      filesystem:
+        fstype: ext4
+        dev: '{{ storage_dev }}'
+      become: true
+
+    - name: mount
+      mount:
+        path: '{{ storage_path }}'
+        src: '{{ storage_dev }}'
+        fstype: ext4
+        state: mounted
+      become: true
+
+    - name: chown fs root
+      file:
+        path: '{{ storage_path }}'
+        state: directory
+        owner: '{{ ansible_ssh_user }}'
+        group: '{{ ansible_ssh_user }}'
+      become: true
+
+# vim:expandtab:ts=2:sw=2:syntax=yaml:tw=0

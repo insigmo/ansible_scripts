@@ -1,0 +1,33 @@
+---
+
+- hosts: servers
+  vars_files:
+    - ../config.yml
+    - ../include/vars.yml
+
+  tasks:
+    - name: start sshd service
+      service:
+          name: sshd
+          state: started
+      become: true
+
+    - name: stop sshd service
+      service:
+          name: sshd
+          state: stopped
+      become: true
+
+    - name: status sshd service
+      service:
+        name: sshd
+        state: running
+      become: true
+
+    - name: restart sshd service
+      service:
+        name: sshd
+        state: restarted
+      become: true
+
+# vim:expandtab:ts=2:sw=2:syntax=yaml:tw=0

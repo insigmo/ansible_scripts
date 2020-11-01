@@ -1,0 +1,37 @@
+---
+
+- hosts: servers
+  vars_files:
+    - ../config.yml
+    - ../include/vars.yml
+
+  tasks:
+    - name: copy mc package
+      copy:
+        src: '../distr/{{ item }}'
+        dest: '/tmp'
+      with_items:
+        - 'mc_{{ mc_version }}_amd64.deb'
+
+    - name: check mc
+      command: dpkg-query --show --showformat='${Status} ${Version} ${Package}\n'
+                  mc
+      register: mc_check
+      failed_when: mc_check.rc > 1
+
+    - name: install mc
+      apt:
+        deb: "/tmp/{{ item.package }}_{{ item.version }}_amd64.deb"
+        dpkg_options: "force-downgrade"
+        force: yes
+
+      environment:
+        DEBIAN_FRONTEND: noninteractive
+
+      become: true
+      when: "'installed {{ item.version }} {{ item.package }}' not in mc_check.stdout"
+     
+      with_items:
+        - { package: 'mc', version: '{{ mc_version }}' }
+
+# vim:expandtab:ts=2:sw=2:syntax=yaml:tw=0

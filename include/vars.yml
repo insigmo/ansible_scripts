@@ -1,0 +1,10 @@
+---
+storage_volume_group: 'vg_storagepool'
+storage_logical_volume: 'lv_vg_storagepool'
+storage_physical_dev: '/dev/sda'
+storage_dev: '/dev/{{ storage_volume_group }}/{{ storage_logical_volume }}'
+storage_path: '/data'
+
+temp_dir: '{{ ansible_env.HOME }}/AxxonTemp'
+logs_dir: '{{ storage_path }}/logs'
+server_upstream: '150.124.12.2'
