@@ -1,10 +1,12 @@
 ---
 
 - hosts: servers
+  vars_files:
+    - ../config.yml
 
   tasks:
     - name: create text file
-      command: echo 'mc version = 3.7.18-1' > /tmp/mc_version.conf
+      shell: echo 'mc version = 3.7.18-1' > /tmp/mc_version.conf
       become: true
 
     - name: replace mc version in /tmp/mc_version.conf

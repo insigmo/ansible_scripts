@@ -18,12 +18,6 @@
           state: stopped
       become: true
 
-    - name: status sshd service
-      service:
-        name: sshd
-        state: running
-      become: true
-
     - name: restart sshd service
       service:
         name: sshd
